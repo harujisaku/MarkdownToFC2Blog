@@ -64,6 +64,9 @@ class MarkdownToFC2Blog {
 			if (ulIndent==0&&preFlg&&olIndent==0) {
 				
 			}else{
+				if (returnStr.endsWith("  ")) {
+					returnStr = returnStr.replace("  ","</br>");
+				}
 				returnStr="<div>"+returnStr+"</div>";
 			}
 			while (ulIndent>0) {
@@ -141,9 +144,7 @@ class MarkdownToFC2Blog {
 			}
 			returnStr=returnStr.replaceFirst("\\*","</em>");
 		}
-		if (returnStr.endsWith("  ")) {
-			returnStr = str.replace("  ","</br>");
-		}
+		
 		return returnStr;
 	}
 }

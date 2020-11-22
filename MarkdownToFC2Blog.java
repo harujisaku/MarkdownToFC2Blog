@@ -60,7 +60,7 @@ class MarkdownToFC2Blog {
 		if(str.isEmpty()){
 			
 		}
-		if(returnStr.matches("([^\\x00-\\x7F]|[a-z])+.*")){
+		if(returnStr.matches("([^\\x00-\\x7F]|[a-zA-Z])+.*")){
 			if (ulIndent==0&&preFlg) {
 				
 			}else{

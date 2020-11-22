@@ -60,7 +60,7 @@ class MarkdownToFC2Blog {
 		if(str.isEmpty()){
 			
 		}
-		if(returnStr.matches("(([^\\x01-\\x7E]|[a-zA-Z]^(?!\\d\\.).*$)+.*)")){
+		if(returnStr.matches("([^\\x00-\\x7F]|[a-z])+.*")){
 			if (ulIndent==0&&preFlg) {
 				
 			}else{
@@ -97,40 +97,16 @@ class MarkdownToFC2Blog {
 				System.out.println("FC2Blog is can't use <h1></h1>");
 			}
 		}
-		if(returnStr.startsWith("-")){
+		if(returnStr.matches("(-|\\*) +.+")){
 			if(ulIndent<1) returnStr="<ul>\n"+returnStr;
 			if(ulIndent>1) returnStr="</ul>\n"+returnStr;
-			returnStr = returnStr.replaceFirst("-","<li>")+"</li>";
+			returnStr = returnStr.replaceFirst("-|\\*","<li>")+"</li>";
 			ulIndent=1;
 		}
-		if(returnStr.startsWith("    -")){
+		if(returnStr.matches("( {4}|\\t)(-|\\*) +.+")){
 			if(ulIndent<2) returnStr="<ul>\n"+returnStr;
 			if(ulIndent>2) returnStr="</ul>\n"+returnStr;
-			returnStr = returnStr.replaceFirst("-","<li>")+"</li>";
-			ulIndent=2;
-		}
-		if(returnStr.startsWith("\t-")){
-			if(ulIndent<2) returnStr="<ul>\n"+returnStr;
-			if(ulIndent>2) returnStr="</ul>\n"+returnStr;
-			returnStr = returnStr.replaceFirst("-","<li>")+"</li>";
-			ulIndent=2;
-		}
-		if(returnStr.startsWith("*")){
-			if(ulIndent<1) returnStr="<ul>\n"+returnStr;
-			if(ulIndent>1) returnStr="</ul>\n"+returnStr;
-			returnStr = returnStr.replaceFirst("-","<li>")+"</li>";
-			ulIndent=1;
-		}
-		if(returnStr.startsWith("    *")){
-			if(ulIndent<2) returnStr="<ul>\n"+returnStr;
-			if(ulIndent>2) returnStr="</ul>\n"+returnStr;
-			returnStr = returnStr.replaceFirst("-","<li>")+"</li>";
-			ulIndent=1;
-		}
-		if(returnStr.startsWith("\t*")){
-			if(ulIndent<2) returnStr="<ul>\n"+returnStr;
-			if(ulIndent>2) returnStr="</ul>\n"+returnStr;
-			returnStr = returnStr.replaceFirst("-","<li>")+"</li>";
+			returnStr = returnStr.replaceFirst("-|\\*","<li>")+"</li>";
 			ulIndent=2;
 		}
 		while(returnStr.contains("***")){

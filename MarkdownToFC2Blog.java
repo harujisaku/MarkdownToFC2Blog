@@ -60,7 +60,7 @@ class MarkdownToFC2Blog {
 		if(str.isEmpty()){
 			
 		}
-		if(returnStr.matches("(([^\\x01-\\x7E]|[\\da-zA-Z])+.*)")){
+		if(returnStr.matches("(([^\\x01-\\x7E]|[a-zA-Z]^(?!\\d\\.).*$)+.*)")){
 			if (ulIndent==0&&preFlg) {
 				
 			}else{
@@ -80,20 +80,22 @@ class MarkdownToFC2Blog {
 				preFlg=true;
 			}
 		}
-		if (returnStr.startsWith("######")) {
-			returnStr = returnStr.replace("######","<h6>")+"</h6>";
-		}else if (returnStr.startsWith("#####")) {
-			returnStr = returnStr.replace("#####","<h5>")+"</h5>";
-		}else if (returnStr.startsWith("####")) {
-			returnStr = returnStr.replace("####","<h4>")+"</h4>";
-		}else if (returnStr.startsWith("###")) {
-			returnStr = returnStr.replace("###","<h3>")+"</h3>";
-		}else if (returnStr.startsWith("##")) {
-			returnStr = returnStr.replace("##","<h2>")+"</h2>";
-			System.out.println("FC2Blog is can't use <h2></h2>");
-		}else if(returnStr.startsWith("#")){
-			returnStr = returnStr.replace("#","<h1>")+"</h1>";
-			System.out.println("FC2Blog is can't use <h1></h1>");
+		if (returnStr.startsWith("#")) {
+			if (returnStr.startsWith("######")) {
+				returnStr = returnStr.replace("######","<h6>")+"</h6>";
+			}else if (returnStr.startsWith("#####")) {
+				returnStr = returnStr.replace("#####","<h5>")+"</h5>";
+			}else if (returnStr.startsWith("####")) {
+				returnStr = returnStr.replace("####","<h4>")+"</h4>";
+			}else if (returnStr.startsWith("###")) {
+				returnStr = returnStr.replace("###","<h3>")+"</h3>";
+			}else if (returnStr.startsWith("##")) {
+				returnStr = returnStr.replace("##","<h2>")+"</h2>";
+				System.out.println("FC2Blog is can't use <h2></h2>");
+			}else if(returnStr.startsWith("#")){
+				returnStr = returnStr.replace("#","<h1>")+"</h1>";
+				System.out.println("FC2Blog is can't use <h1></h1>");
+			}
 		}
 		if(returnStr.startsWith("-")){
 			if(ulIndent<1) returnStr="<ul>\n"+returnStr;

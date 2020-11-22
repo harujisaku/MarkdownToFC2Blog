@@ -1,6 +1,8 @@
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.PrintWriter;
@@ -9,7 +11,6 @@ import java.io.FileNotFoundException;
 
 class MarkdownToFC2Blog {
 	File inputFile,outputFile;
-	FileReader inputFileReader;
 	boolean preFlg;
 	int ulIndent=0;
 	public static void main(String[] args) {
@@ -24,9 +25,8 @@ class MarkdownToFC2Blog {
 			inputFile = new File(fileName);
 			outputFile = new File(fileName.replaceAll("\\..+","\\.html"));
 			if(checkBeforeReadfile(inputFile)){
-				inputFileReader = new FileReader(inputFile);
-				BufferedReader inputBR = new BufferedReader(inputFileReader);
-				PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
+				BufferedReader inputBR = new BufferedReader(new  InputStreamReader(new FileInputStream(inputFile),"UTF-8"));
+				PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile),"UTF-8")));
 				String str;
 				while((str = inputBR.readLine())!=null){
 					pw.println(parse(str));

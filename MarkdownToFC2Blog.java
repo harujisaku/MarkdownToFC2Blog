@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 class MarkdownToFC2Blog {
 	File inputFile,outputFile;
 	boolean preFlg;
-	int ulIndent=0;
+	int ulIndent=0,olIndent=0;
 	public static void main(String[] args) {
 		if(args.length!=1) {String[] argsa={"test.md"};
 	args=argsa;}
@@ -60,8 +60,8 @@ class MarkdownToFC2Blog {
 		if(str.isEmpty()){
 			
 		}
-		if(returnStr.matches("([^\\x00-\\x7F]|[a-zA-Z])+.*")){
-			if (ulIndent==0&&preFlg) {
+		if(returnStr.matches("([^\\x00-\\x7F]|[a-zA-Z])+.*|[0-9][^.].*")){
+			if (ulIndent==0&&preFlg&&olIndent==0) {
 				
 			}else{
 				returnStr="<div>"+returnStr+"</div>";
@@ -70,13 +70,17 @@ class MarkdownToFC2Blog {
 				ulIndent--;
 				returnStr="</ul>\n"+returnStr;
 			}
+			while (olIndent>0) {
+				olIndent--;
+				returnStr="</ol>\n"+returnStr;
+			}
 		}
 		if (returnStr.startsWith("```")) {
 			if (preFlg) {
 				returnStr=returnStr.replaceFirst("```","</pre>");
 				preFlg=false;
 			}else{
-				returnStr=returnStr.replaceFirst("```","<pre>");
+				returnStr="<pre>";
 				preFlg=true;
 			}
 		}
@@ -108,6 +112,18 @@ class MarkdownToFC2Blog {
 			if(ulIndent>2) returnStr="</ul>\n"+returnStr;
 			returnStr = returnStr.replaceFirst("-|\\*","<li>")+"</li>";
 			ulIndent=2;
+		}
+		if (returnStr.matches("[0-9]\\. +.+")) {
+			if (olIndent<1) returnStr="<ol>\n"+returnStr;
+			if(olIndent>1) returnStr="</ol>\n"+returnStr;
+			returnStr=returnStr.replaceFirst("[0-9]\\. +","<li>")+"</li>";
+			olIndent=1;
+		}
+		if (returnStr.matches("( {4}|\\t)[0-9]\\. +.+")) {
+			if (olIndent<2) returnStr="<ol>\n"+returnStr;
+			if(olIndent>2) returnStr="</ol>\n"+returnStr;
+			returnStr=returnStr.replaceFirst("[0-9]\\. +","<li>")+"</li>";
+			olIndent=2;
 		}
 		while(returnStr.contains("***")){
 			returnStr=returnStr.replaceFirst("\\*\\*\\*","<em><strong>");

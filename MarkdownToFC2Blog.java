@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 class MarkdownToFC2Blog {
 	File inputFile,outputFile;
 	boolean preFlg;
-	int ulIndent=0,olIndent=0;
+	int ulIndent=0,olIndent=0,qIndent=0;
 	public static void main(String[] args) {
 		if(args.length!=1) {String[] argsa={"test.md"};
 	args=argsa;}
@@ -35,6 +35,8 @@ class MarkdownToFC2Blog {
 					pw.println("</ul>");
 				}else if(olIndent>0){
 					pw.println("</ol>");
+				}else if(qIndent>0){
+					pw.println("</blockquote>");
 				}
 				pw.close();
 				inputBR.close();
@@ -59,14 +61,16 @@ class MarkdownToFC2Blog {
 	
 	private String parse(String str){
 		String returnStr=str;
-		if(returnStr.matches("([^\\x00-\\x7F]|[a-zA-Z])+.*|[0-9][^.].*")){
+		if(returnStr.matches("([^\\x00-\\x7F]|[a-zA-Z])+.*|[0-9][^.].*")||returnStr.isEmpty()){
 			if (ulIndent==0&&preFlg&&olIndent==0) {
 				
 			}else{
 				if (returnStr.endsWith("  ")) {
 					returnStr = returnStr.replace("  ","</br>");
 				}
-				returnStr="<div>"+returnStr+"</div>";
+				if (!returnStr.isEmpty()) {
+					returnStr="<div>"+returnStr+"</div>";
+				}
 			}
 			while (ulIndent>0) {
 				ulIndent--;
@@ -75,6 +79,10 @@ class MarkdownToFC2Blog {
 			while (olIndent>0) {
 				olIndent--;
 				returnStr="</ol>\r\n"+returnStr;
+			}
+			while (qIndent>0) {
+				qIndent--;
+				returnStr="</blockquote>\r\n"+returnStr;
 			}
 		}
 		if (returnStr.startsWith("```")) {
@@ -127,6 +135,18 @@ class MarkdownToFC2Blog {
 			returnStr=returnStr.replaceFirst("[0-9]\\. +","<li>")+"</li>";
 			olIndent=2;
 		}
+		if(returnStr.matches("(>) +.+")){
+			if(qIndent<1) returnStr="<blockquote>\r\n"+returnStr;
+			if(qIndent>1) returnStr="</blockquote>\r\n"+returnStr;
+			returnStr = returnStr.replaceFirst("(>) +(.+)","$2");
+			qIndent=1;
+		}
+		if(returnStr.matches("(>>) +.+")){
+			if(qIndent<2) returnStr="<blockquote>\r\n"+returnStr;
+			if(qIndent>2) returnStr="</blockquote>\r\n"+returnStr;
+			returnStr = returnStr.replaceFirst("(>>) +(.+)","$2");
+			qIndent=2;
+		}
 		while (returnStr.matches("(\\s|.)*(\\*|_){3}.*(\\*|_){3}.*")) {
 			returnStr=returnStr.replaceFirst("([^\\*_]+)(\\*|_){3}([^\\*_]+)(\\*|_){3}([^\\*_]+)","$1<strong><em>$3</em></strong>$5");
 		}
@@ -135,6 +155,12 @@ class MarkdownToFC2Blog {
 		}
 		while (returnStr.matches("(\\s|.)*(\\*|_).*(\\*|_).*")) {
 			returnStr=returnStr.replaceFirst("([^\\*_]+)(\\*|_)([^\\*_]+)(\\*|_)([^\\*_]+)","$1<em>$3</em>$5");
+		}
+		while(returnStr.matches("\\!(\\s|.)*\\[(.*)\\]\\((.*)\\)")){
+			returnStr=returnStr.replaceFirst("\\!\\[(.*)\\]\\((.*)\\)","<a herf=\"$1\">$2</a>");
+		}
+		while(returnStr.matches("(\\s|.)*\\[(.*)\\]\\((.*)\\)")){
+			returnStr=returnStr.replaceFirst("\\[(.*)\\]\\((.*)\\)","<img src=\"$2\" alt=\"$1\">");
 		}
 		return returnStr;
 	}

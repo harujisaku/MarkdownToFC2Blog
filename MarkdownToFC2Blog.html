@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Marked in the browser</title>
+</head>
+<body>
+<p>
+	<form name="input">
+		<textarea id="inputstr" value="1"></textarea>
+	</form>
+</p>
+<p>
+	<form name="output">
+		<textarea id="outputstr" value="1"></textarea>
+	</form>
+</p>
+	<input type="button" value="convert" onclick="convert()"/>
+	<div id="content"></div>
+	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+	<script>
+		function convert(){
+			document.getElementById("outputstr").value=marked(document.getElementById("inputstr").value);
+		}
+  </script>
+</body>
+</html>

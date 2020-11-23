@@ -103,16 +103,16 @@ class MarkdownToFC2Blog {
 				System.out.println("FC2Blog is can't use <h1></h1>");
 			}
 		}
-		if(returnStr.matches("(-|\\*) +.+")){
+		if(returnStr.matches("(-|\\*|\\+) +.+")){
 			if(ulIndent<1) returnStr="<ul>\r\n"+returnStr;
 			if(ulIndent>1) returnStr="</ul>\r\n"+returnStr;
-			returnStr = returnStr.replaceFirst("-|\\*","<li>")+"</li>";
+			returnStr = returnStr.replaceFirst("-|\\*|\\+","<li>")+"</li>";
 			ulIndent=1;
 		}
-		if(returnStr.matches("( {4}|\\t)(-|\\*) +.+")){
+		if(returnStr.matches("( {4}|\\t)(-|\\*|\\+) +.+")){
 			if(ulIndent<2) returnStr="<ul>\r\n"+returnStr;
 			if(ulIndent>2) returnStr="</ul>\r\n"+returnStr;
-			returnStr = returnStr.replaceFirst("-|\\*","<li>")+"</li>";
+			returnStr = returnStr.replaceFirst("-|\\*|\\+","<li>")+"</li>";
 			ulIndent=2;
 		}
 		if (returnStr.matches("[0-9]\\. +.+")) {

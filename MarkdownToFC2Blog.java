@@ -33,6 +33,8 @@ class MarkdownToFC2Blog {
 				}
 				if (ulIndent>0) {
 					pw.println("</ul>");
+				}else if(olIndent>0){
+					pw.println("</ol>");
 				}
 				pw.close();
 				inputBR.close();
@@ -57,9 +59,6 @@ class MarkdownToFC2Blog {
 	
 	private String parse(String str){
 		String returnStr=str;
-		if(str.isEmpty()){
-			
-		}
 		if(returnStr.matches("([^\\x00-\\x7F]|[a-zA-Z])+.*|[0-9][^.].*")){
 			if (ulIndent==0&&preFlg&&olIndent==0) {
 				
@@ -71,15 +70,13 @@ class MarkdownToFC2Blog {
 			}
 			while (ulIndent>0) {
 				ulIndent--;
-				returnStr="</ul>\n\r"+returnStr;
+				returnStr="</ul>\r\n"+returnStr;
 			}
 			while (olIndent>0) {
 				olIndent--;
-				returnStr="</ol>\n\r"+returnStr;
+				returnStr="</ol>\r\n"+returnStr;
 			}
 		}
-		System.out.println(returnStr);
-		System.out.println(returnStr.matches(".*\\*.*"));
 		if (returnStr.startsWith("```")) {
 			if (preFlg) {
 				returnStr=returnStr.replaceFirst("```","</pre>");
@@ -107,44 +104,38 @@ class MarkdownToFC2Blog {
 			}
 		}
 		if(returnStr.matches("(-|\\*) +.+")){
-			if(ulIndent<1) returnStr="<ul>\n\r"+returnStr;
-			if(ulIndent>1) returnStr="</ul>\n\r"+returnStr;
+			if(ulIndent<1) returnStr="<ul>\r\n"+returnStr;
+			if(ulIndent>1) returnStr="</ul>\r\n"+returnStr;
 			returnStr = returnStr.replaceFirst("-|\\*","<li>")+"</li>";
 			ulIndent=1;
 		}
 		if(returnStr.matches("( {4}|\\t)(-|\\*) +.+")){
-			if(ulIndent<2) returnStr="<ul>\n\r"+returnStr;
-			if(ulIndent>2) returnStr="</ul>\n\r"+returnStr;
+			if(ulIndent<2) returnStr="<ul>\r\n"+returnStr;
+			if(ulIndent>2) returnStr="</ul>\r\n"+returnStr;
 			returnStr = returnStr.replaceFirst("-|\\*","<li>")+"</li>";
 			ulIndent=2;
 		}
 		if (returnStr.matches("[0-9]\\. +.+")) {
-			if (olIndent<1) returnStr="<ol>\n\r"+returnStr;
-			if(olIndent>1) returnStr="</ol>\n\r"+returnStr;
+			if (olIndent<1) returnStr="<ol>\r\n"+returnStr;
+			if(olIndent>1) returnStr="</ol>\r\n"+returnStr;
 			returnStr=returnStr.replaceFirst("[0-9]\\. +","<li>")+"</li>";
 			olIndent=1;
 		}
 		if (returnStr.matches("( {4}|\\t)[0-9]\\. +.+")) {
-			if (olIndent<2) returnStr="<ol>\n\r"+returnStr;
-			if(olIndent>2) returnStr="</ol>\n\r"+returnStr;
+			if (olIndent<2) returnStr="<ol>\r\n"+returnStr;
+			if(olIndent>2) returnStr="</ol>\r\n"+returnStr;
 			returnStr=returnStr.replaceFirst("[0-9]\\. +","<li>")+"</li>";
 			olIndent=2;
 		}
-		while(returnStr.matches(".*(\\*|_){3}.*")){
-			returnStr=returnStr.replaceFirst("\\*\\*\\*|___","<em><strong>");
-			returnStr=returnStr.replaceFirst("\\*\\*\\*|___","</em></strong>");
+		while (returnStr.matches("(\\s|.)*(\\*|_){3}.*(\\*|_){3}.*")) {
+			returnStr=returnStr.replaceFirst("([^\\*_]+)(\\*|_){3}([^\\*_]+)(\\*|_){3}([^\\*_]+)","$1<strong><em>$3</em></strong>$5");
 		}
-		while(returnStr.matches(".*(\\*|_){2}.*")){
-			returnStr=returnStr.replaceFirst("\\*\\*|__","<strong>");
-			returnStr=returnStr.replaceFirst("\\*\\*|__","</strong>");
+		while (returnStr.matches("(\\s|.)*(\\*|_){2}.*(\\*|_){2}.*")) {
+			returnStr=returnStr.replaceFirst("([^\\*_]+)(\\*|_){2}([^\\*_]+)(\\*|_){2}([^\\*_]+)","$1<strong>$3</strong>$5");
 		}
-		while(returnStr.contains("*")){
-			System.out.println("dsdffsdadghgg");
-			returnStr=returnStr.replaceFirst("\\*|_","<em>");
-			returnStr=returnStr.replaceFirst("\\*|_","</em>");
-			System.out.println(returnStr);
+		while (returnStr.matches("(\\s|.)*(\\*|_).*(\\*|_).*")) {
+			returnStr=returnStr.replaceFirst("([^\\*_]+)(\\*|_)([^\\*_]+)(\\*|_)([^\\*_]+)","$1<em>$3</em>$5");
 		}
-		
 		return returnStr;
 	}
 }
